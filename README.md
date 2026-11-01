@@ -18,7 +18,7 @@
 Задание 16: https://madmalle.github.io/inf-ege/
 Задание 17: https://madmalle.github.io/inf-ege/
 Задание 18: https://madmalle.github.io/inf-ege/
-Задания 19-21: https://madmalle.github.io/inf-ege/
+Задания 19-21: https://madmalle.github.io/inf-ege/19-21.html
 Задание 22: https://madmalle.github.io/inf-ege/
 Задание 23: https://madmalle.github.io/inf-ege/
 Задание 24: https://madmalle.github.io/inf-ege/
