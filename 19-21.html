@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Теория игр — Прототипы заданий 19-21</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body { 
+    font-family: 'Segoe UI', Tahoma, sans-serif; 
+    background-color: #faf5f7; 
+    color: #2e1f26; 
+    line-height: 1.6; 
+    min-height: 100vh;
+  }
+  
+  .container { 
+    max-width: 1000px; 
+    margin: 0 auto; 
+    padding: 40px 20px; 
+  }
+  
+  header { 
+    background: white; 
+    padding: 40px 30px; 
+    border-radius: 16px 16px 0 0; 
+    text-align: center; 
+    border-bottom: 3px solid #e5ccd6;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  }
+  header h1 { color: #8c2e4c; font-size: 28px; margin-bottom: 12px; font-weight: 700; letter-spacing: 0.3px; }
+  header p { color: #7a606b; font-size: 16px; }
+
+  nav { 
+    display: flex; 
+    background: #f0e6ea; 
+    padding: 15px; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+    border-bottom: 1px solid #e5ccd6;
+  }
+  nav button { 
+    flex: 1; 
+    padding: 12px 20px; 
+    border: none; 
+    background: white; 
+    color: #8c2e4c; 
+    font-size: 15px; 
+    font-weight: 600; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+  }
+  nav button:hover { background: #faf5f7; }
+  nav button.active { 
+    background: #ba6983; 
+    color: white; 
+    box-shadow: 0 4px 10px rgba(186, 105, 131, 0.3); 
+  }
+
+  main { 
+    background: white; 
+    padding: 40px; 
+    border-radius: 0 0 16px 16px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+    min-height: 500px; 
+  }
+  .section { display: none; animation: fade 0.3s ease; }
+  .section.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  h2 { 
+    color: #8c2e4c; 
+    margin-bottom: 25px; 
+    border-bottom: 2px solid #f0e6ea; 
+    padding-bottom: 12px; 
+    font-size: 24px;
+  }
+  h3 { color: #a84562; margin: 25px 0 15px; font-size: 19px; }
+  p { margin-bottom: 15px; font-size: 15px; color: #4b3a42; }
+
+  pre { 
+    background: #2a2227; 
+    color: #f0e6ea; 
+    padding: 20px; 
+    border-radius: 12px; 
+    overflow-x: auto; 
+    font-family: 'Consolas', 'Courier New', monospace; 
+    font-size: 14px; 
+    line-height: 1.6; 
+    margin: 20px 0; 
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+  }
+  code { font-family: 'Consolas', 'Courier New', monospace; }
+
+  .line-card { 
+    background: #faf5f7; 
+    border-left: 4px solid #ba6983; 
+    padding: 16px 20px; 
+    margin-bottom: 12px; 
+    border-radius: 0 8px 8px 0; 
+    display: flex; 
+    gap: 15px; 
+  }
+  .line-num { 
+    background: #ba6983; 
+    color: white; 
+    width: 24px; 
+    height: 24px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-weight: bold; 
+    font-size: 13px; 
+    flex-shrink: 0; 
+  }
+  .line-code { 
+    font-family: 'Consolas', 'Courier New', monospace; 
+    color: #8c2e4c; 
+    font-weight: 600; 
+    font-size: 14px; 
+    background: #f0e6ea; 
+    padding: 4px 10px; 
+    border-radius: 6px; 
+    display: inline-block; 
+    margin-bottom: 8px; 
+  }
+  .line-text { font-size: 14px; color: #4b3a42; }
+
+  .task-card { 
+    background: white; 
+    border: 1px solid #e5ccd6; 
+    border-radius: 12px; 
+    padding: 25px; 
+    margin-bottom: 25px; 
+    transition: box-shadow 0.2s;
+  }
+  .task-card:hover { box-shadow: 0 6px 20px rgba(186, 105, 131, 0.1); }
+  
+  .task-title { 
+    font-weight: 700; 
+    color: #8c2e4c; 
+    margin-bottom: 15px; 
+    font-size: 18px; 
+  }
+  .task-desc { 
+    font-size: 14px; 
+    margin-bottom: 20px; 
+    color: #4b3a42; 
+    background: #faf5f7; 
+    padding: 15px; 
+    border-radius: 8px; 
+    border: 1px solid #e5ccd6;
+  }
+  
+  label { font-weight: 600; color: #8c2e4c; margin-right: 10px; font-size: 15px; }
+  input[type="text"] { 
+    padding: 10px 15px; 
+    border: 1px solid #d1b5c1; 
+    border-radius: 8px; 
+    font-size: 15px; 
+    width: 160px; 
+    margin-right: 10px; 
+    outline: none; 
+    transition: border 0.2s;
+    color: #2e1f26;
+    background: #faf5f7;
+  }
+  input[type="text"]:focus { border-color: #ba6983; background: white; }
+  
+  .btn { 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: 600; 
+    font-size: 14px; 
+    transition: all 0.2s; 
+    margin: 5px 5px 5px 0; 
+  }
+  
+  .btn-check { background: #ba6983; color: white; }
+  .btn-check:hover { background: #9c4a65; }
+  
+  .btn-code { background: #f0e6ea; color: #8c2e4c; }
+  .btn-code:hover { background: #e5ccd6; }
+  
+  .result { font-weight: 600; margin-top: 10px; display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 14px; }
+  .result.ok { color: #1e7d3e; background: #e6f4ea; }
+  .result.err { color: #b83645; background: #fce8ea; }
+  
+  .hidden { display: none; }
+  
+  .hint-box { 
+    background: #faf5f7; 
+    border-left: 4px solid #ba6983; 
+    padding: 20px; 
+    border-radius: 8px; 
+    margin: 20px 0; 
+    font-size: 15px; 
+    color: #4b3a42;
+  }
+  .hint-box strong { color: #8c2e4c; }
+
+  .logic-block {
+    background: #fff;
+    border: 1px solid #e5ccd6;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+  }
+  .logic-block h4 {
+    color: #8c2e4c;
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  .pos-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 14px;
+  }
+  .pos-table th, .pos-table td {
+    border: 1px solid #e5ccd6;
+    padding: 10px;
+    text-align: center;
+  }
+  .pos-table th { background: #f0e6ea; color: #8c2e4c; }
+  .pos-win { background: #e6f4ea; color: #1e7d3e; font-weight: bold; }
+  .pos-lose { background: #fce8ea; color: #b83645; font-weight: bold; }
+  .pos-neutral { background: #faf5f7; }
+  
+  .step-by-step {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .step-box {
+    display: flex;
+    gap: 15px;
+    background: #faf5f7;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #ba6983;
+  }
+  .step-num {
+    background: #ba6983;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .step-text strong { color: #8c2e4c; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Теория игр — задания 19-21</h1>
+    <p>Разбор прототипов, универсальный шаблон кода и практика</p>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" onclick="showTab('theory', this)">Теория</button>
+    <button class="nav-btn" onclick="showTab('prototypes', this)">Прототипы</button>
+    <button class="nav-btn" onclick="showTab('practice', this)">Практика</button>
+  </nav>
+
+  <main>
+    <!-- ВКЛАДКА 1: ТЕОРИЯ -->
+    <section id="theory" class="section active">
+
+      <h2>Шаг 1. Конкретная задача (пример)</h2>
+      <div class="logic-block">
+        <p><strong>Условие:</strong> Петя и Ваня играют в кучу камней. За один ход можно <strong>добавить 1 камень</strong> или <strong>увеличить кучу в 2 раза</strong>. Игра заканчивается, когда камней становится <strong>не менее 69</strong>. Побеждает тот, кто сделал последний ход. Стартовое количество камней — S (1 ≤ S ≤ 68).</p>
+        <p>Именно из этого условия берутся все числа: <strong>69</strong> (финиш), <strong>+1</strong> и <strong>×2</strong> (ходы), <strong>1…68</strong> (диапазон S).</p>
+      </div>
+
+      <h2>Шаг 2. Шаблон кода под эту задачу</h2>
+      <p>Одна и та же функция решает все три вопроса. В ней уже подставлены числа из задачи выше:</p>
+      <pre><code>def game(s, p, end):
+    if s &gt;= 69: return p in end
+    if p &gt;= max(end): return False
+    m = [game(s + 1, p + 1, end), game(s * 2, p + 1, end)]
+    return (any if p % 2 == 0 else all)(m)</code></pre>
+
+      <div class="hint-box">
+        <strong>Что означают переменные:</strong><br><br>
+        • <strong>s</strong> — текущее количество камней.<br>
+        • <strong>p</strong> — номер хода. Чётное — Петя, нечётное — Ваня.<br>
+        • <strong>end</strong> — список ходов, на которых игра должна закончиться, чтобы победил «наш» игрок.<br>
+        • <strong>m</strong> — результаты всех возможных ходов (True — победа, False — поражение).
+      </div>
+
+      <h3>Построчный разбор шаблона — как мы к нему пришли</h3>
+
+      <div class="line-card">
+        <div class="line-num">1</div>
+        <div>
+          <div class="line-code">def game(s, p, end):</div>
+          <div class="line-text">
+            <strong>Объявляем функцию.</strong> Мы хотим проверить: «может ли игрок, чей сейчас ход, гарантированно победить, если в куче s камней, это p-й ход, и победа должна случиться на одном из ходов из списка end». Функция возвращает True (победа возможна) или False (нет).
+          </div>
+        </div>
+      </div>
+
+      <div class="line-card">
+        <div class="line-num">2</div>
+        <div>
+          <div class="line-code">if s &gt;= 69: return p in end</div>
+          <div class="line-text">
+            <strong>Условие выхода (проверка на финиш).</strong> Если камней уже ≥ 69, игра закончена. Мы проверяем, входит ли текущий номер хода <code>p</code> в список <code>end</code>. Если да — значит, победил нужный нам игрок, возвращаем True. Если нет — возвращаем False (игра закончилась, но не на «нашем» ходу).
+            <br><br>
+            <em>Пример:</em> если <code>end = [2]</code> (победа Вани на 2-м ходу), а игра закончилась на ходу <code>p = 3</code> (победа Пети), то <code>3 in [2]</code> → False. Возвращаем False — Ваня не выиграл.
+          </div>
+        </div>
+      </div>
+
+      <div class="line-card">
+        <div class="line-num">3</div>
+        <div>
+          <div class="line-code">if p &gt;= max(end): return False</div>
+          <div class="line-text">
+            <strong>Защита от бесконечности.</strong> Если мы уже сделали больше ходов, чем максимально нужно (<code>max(end)</code>), а игра так и не закончилась — значит, нужный игрок не смог победить. Возвращаем False и не идём в рекурсию глубже. Эта строка экономит время и не даёт программе уйти в бесконечный цикл.
+            <br><br>
+            <em>Пример:</em> если <code>end = [2]</code>, а мы уже на 3-м ходу (<code>p = 3</code>), то <code>3 >= 2</code> → True. Возвращаем False, потому что нужный игрок (Ваня) должен был победить на 2-м ходу, а не позже.
+          </div>
+        </div>
+      </div>
+
+      <div class="line-card">
+        <div class="line-num">4</div>
+        <div>
+          <div class="line-code">m = [game(s + 1, p + 1, end), game(s * 2, p + 1, end)]</div>
+          <div class="line-text">
+            <strong>Перебор всех возможных ходов.</strong> Из текущей позиции у игрока есть два хода: <code>+1</code> и <code>*2</code>. Мы вызываем функцию <code>game</code> для каждого из них, увеличивая номер хода на 1 (<code>p + 1</code>). Результаты (True или False) складываем в список <code>m</code>.
+            <br><br>
+            <em>Пример:</em> пусть <code>s = 34</code>, <code>p = 0</code>. Тогда <code>m</code> будет содержать результаты для <code>s = 35</code> (ход +1) и <code>s = 68</code> (ход *2). Оба этих значения ≥ 35, значит, оба выигрышные для соперника, и <code>m</code> будет <code>[False, False]</code> (потому что следующий игрок сразу выиграет).
+          </div>
+        </div>
+      </div>
+
+      <div class="line-card">
+        <div class="line-num">5</div>
+        <div>
+          <div class="line-code">return (any if p % 2 == 0 else all)(m)</div>
+          <div class="line-text">
+            <strong>Принимаем решение в зависимости от того, чей ход.</strong>
+            <br><br>
+            • Если <code>p</code> чётное (<code>p % 2 == 0</code>), значит, сейчас ходит <strong>Петя</strong> (наш игрок). Ему достаточно <strong>хотя бы одного</strong> победного хода, поэтому используем <code>any(m)</code>.
+            <br>
+            • Если <code>p</code> нечётное, значит, сейчас ходит <strong>Ваня</strong> (соперник). Он будет выбирать лучший для себя ход, поэтому Петя победит только если <strong>все</strong> ходы Вани ведут к победе Пети. Используем <code>all(m)</code>.
+            <br><br>
+            Запись <code>(any if p % 2 == 0 else all)(m)</code> — это компактный способ сказать: «выбери функцию (<code>any</code> или <code>all</code>) и сразу примени её к списку <code>m</code>».
+          </div>
+        </div>
+      </div>
+
+      <h2>Шаг 3. Как отвечать на 19, 20, 21 — три разных вызова</h2>
+      <p>Сама функция <strong>не меняется</strong>. Меняется только то, что мы передаём в неё извне: диапазон S и массив <code>end</code>.</p>
+
+      <div class="logic-block">
+        <h4>Задание 19 — «Ваня выигрывает за 1 ход»</h4>
+        <p><strong>Что нужно:</strong> Петя не выигрывает за 1 ход, но любой его ход ведёт в позицию, где Ваня выигрывает за 1 ход.</p>
+        <p><strong>Как это выразить в коде:</strong></p>
+        <ul style="margin-left: 20px; color: #4b3a42;">
+          <li><code>not game(s, 0, [1])</code> — Петя <strong>не</strong> выигрывает за 1 ход (иначе <code>game(s, 0, [1])</code> вернуло бы True).</li>
+          <li><code>game(s, 0, [2])</code> — игра заканчивается на 2-м ходу (ход Вани) победой Вани.</li>
+        </ul>
+        <pre><code># 19. Минимальное S, при котором Петя не выигрывает за 1, а Ваня — за 1
+ans19 = [s for s in range(1, 69)
+         if not game(s, 0, [1]) and game(s, 0, [2])]
+print(min(ans19))   # → 34</code></pre>
+      </div>
+
+      <div class="logic-block">
+        <h4>Задание 20 — «Петя выигрывает за 2 хода»</h4>
+        <p><strong>Что нужно:</strong> Петя не выигрывает за 1 ход, но выигрывает своим 2-м ходом (то есть игра заканчивается на 3-м ходу).</p>
+        <p><strong>Как это выразить в коде:</strong></p>
+        <ul style="margin-left: 20px; color: #4b3a42;">
+          <li><code>game(s, 0, [3])</code> — игра закончилась на 3-м ходу (ход Пети) победой Пети.</li>
+          <li><code>not game(s, 0, [1])</code> — но Петя <strong>не</strong> может победить раньше (за 1 ход).</li>
+        </ul>
+        <pre><code># 20. Два наименьших S, при которых Петя выигрывает за 2, но не за 1
+ans20 = sorted([s for s in range(1, 69)
+                if game(s, 0, [3]) and not game(s, 0, [1])])
+print(ans20[:2])   # → [17, 33]</code></pre>
+      </div>
+
+      <div class="logic-block">
+        <h4>Задание 21 — «Ваня выигрывает за 1 ИЛИ 2 хода, но не за 1»</h4>
+        <p><strong>Что нужно:</strong> Ваня гарантированно выигрывает своим 1-м или 2-м ходом. Но стратегии «выиграть за 1 ход» у него нет.</p>
+        <p><strong>Как это выразить в коде:</strong></p>
+        <ul style="margin-left: 20px; color: #4b3a42;">
+          <li><code>game(s, 0, [4])</code> — игра заканчивается на 4-м ходу (ход Вани) победой Вани.</li>
+          <li><code>not game(s, 0, [2])</code> — но Ваня <strong>не</strong> может выиграть на 2-м ходу (за 1 ход).</li>
+        </ul>
+        <pre><code># 21. Минимальное S, при котором Ваня выигрывает за 2 хода, но не за 1
+ans21 = [s for s in range(1, 69)
+         if game(s, 0, [4]) and not game(s, 0, [2])]
+print(min(ans21))   # → 32</code></pre>
+      </div>
+
+      <div class="hint-box">
+        <strong>Логика массива <code>end</code>:</strong><br>
+        • <code>end = [1]</code> — победа Пети на 1-м ходу.<br>
+        • <code>end = [2]</code> — победа Вани на 2-м ходу (свой 1-й ход).<br>
+        • <code>end = [3]</code> — победа Пети на 3-м ходу (свой 2-й ход).<br>
+        • <code>end = [4]</code> — победа Вани на 4-м ходу (свой 2-й ход).<br>
+        <br>
+        То есть в <code>end</code> указывается <strong>абсолютный номер хода</strong>, на котором должен победить «наш» игрок.
+      </div>
+
+      <h2>Шаг 4. Что менять, если задача другая</h2>
+      <p>Шаблон один и тот же. В нём меняются ровно 4 места:</p>
+      <table class="pos-table">
+        <tr>
+          <th>Что меняем</th>
+          <th>В нашей задаче</th>
+          <th>Пример из другой задачи</th>
+        </tr>
+        <tr>
+          <td>Условие выхода (финиш)</td>
+          <td><code>s &gt;= 69</code></td>
+          <td><code>s &lt;= 16</code> (если камни убывают)</td>
+        </tr>
+        <tr>
+          <td>Список ходов</td>
+          <td><code>[s+1, s*2]</code></td>
+          <td><code>[s-3, s-8, s//3]</code></td>
+        </tr>
+        <tr>
+          <td>Диапазон S в переборе</td>
+          <td><code>range(1, 69)</code></td>
+          <td><code>range(17, 300)</code></td>
+        </tr>
+        <tr>
+          <td>Массив <code>end</code> (зависит от вопроса)</td>
+          <td><code>[1], [3], [4]</code></td>
+          <td>смотри по тексту задания</td>
+        </tr>
+      </table>
+      <p>Больше <strong>ничего менять не нужно</strong> — функция <code>game</code> универсальна.</p>
+
+      <hr style="border: none; border-top: 2px dashed #e5ccd6; margin: 40px 0;">
+
+      <h2>Логика без кода — «на пальцах»</h2>
+      <p>Чтобы понимать, что делает код, полезно один раз пройти путь руками. Идём от финиша к старту.</p>
+
+      <h3>Шаг A. Где Петя побеждает мгновенно?</h3>
+      <p>Петя ходит первым. Если ход +1 или ×2 сразу даёт ≥ 69, Петя выигрывает моментально.</p>
+      <ul style="margin-left: 20px; color: #4b3a42;">
+        <li><code>S + 1 ≥ 69</code> → <code>S ≥ 68</code></li>
+        <li><code>S × 2 ≥ 69</code> → <code>S ≥ 35</code></li>
+      </ul>
+      <p>Значит, <strong>35…68</strong> — это «горячая зона»: тот, кто в ней оказался, сразу выигрывает.</p>
+
+      <h3>Шаг B. Где Петя гарантированно проиграет?</h3>
+      <p>Это позиции, из которых <strong>нельзя</strong> сразу выиграть, а любой ход дарит сопернику «горячую» позицию. Проверим S = 34:</p>
+      <ul style="margin-left: 20px; color: #4b3a42;">
+        <li>ход +1 → 35 (выигрышная для соперника).</li>
+        <li>ход ×2 → 68 (тоже выигрышная).</li>
+      </ul>
+      <p>Оба хода плохие → <strong>34 — проигрышная позиция</strong>. Дальше проигрышными будут 17, 8, 4, 2, 1 (получаются делением на 2 и вычитанием 1 с конца).</p>
+
+      <h3>Шаг C. Где Петя выигрывает за 2 хода?</h3>
+      <p>Это позиции, из которых есть <strong>хотя бы один</strong> ход в проигрышную. Например, S = 33: ход +1 → 34 (проигрышная для Вани). Значит, Петя выигрывает за 2 хода.</p>
+
+      <h3>Собираем ответы</h3>
+      <table class="pos-table">
+        <tr>
+          <th>Задание</th>
+          <th>Что нужно</th>
+          <th>Ответ</th>
+        </tr>
+        <tr>
+          <td><strong>19</strong></td>
+          <td>Петя не выигрывает за 1, но любой его ход → Ваня выигрывает за 1. То есть S — <strong>проигрышная позиция</strong>. Минимальное S среди проигрышных.</td>
+          <td><strong>34</strong></td>
+        </tr>
+        <tr>
+          <td><strong>20</strong></td>
+          <td>Петя не выигрывает за 1, но выигрывает за 2. То есть S — <strong>выигрышная за 2</strong>. Два наименьших.</td>
+          <td><strong>17, 33</strong></td>
+        </tr>
+        <tr>
+          <td><strong>21</strong></td>
+          <td>Ваня выигрывает за 1 или 2, но не за 1. То есть S — <strong>проигрышная за 2</strong> для Пети. Минимальное.</td>
+          <td><strong>32</strong></td>
+        </tr>
+      </table>
+
+      <hr style="border: none; border-top: 2px dashed #e5ccd6; margin: 40px 0;">
+
+      <h2>Что такое any и all?</h2>
+      <p>Это встроенные функции Python для работы со списком True/False.</p>
+      <ul style="margin-left: 20px; margin-bottom: 15px; color: #4b3a42;">
+        <li><code>any([False, True, False])</code> → <code>True</code> (есть хотя бы один True).</li>
+        <li><code>all([True, False, True])</code> → <code>False</code> (не все True).</li>
+      </ul>
+      <p><strong>Почему в игре именно так:</strong> если сейчас ходит Петя (чётный <code>p</code>), ему достаточно одного победного хода → <code>any</code>. Если ходит Ваня (нечётный <code>p</code>), Ваня будет мешать, и Петя победит только если все ходы Вани ведут к победе Пети → <code>all</code>.</p>
+
+    </section>
+
+    <!-- ВКЛАДКА 2: ПРОТОТИПЫ -->
+    <section id="prototypes" class="section">
+      <h2>Основные прототипы задач</h2>
+      <p>Проанализировав базу ФИПИ, можно выделить 3 основных типа условий. Шаблон кода остаётся тем же, меняются только 2-3 строки.</p>
+
+      <!-- ПРОТОТИП 1 -->
+      <div class="task-card">
+        <div class="task-title">Прототип 1: Одна куча, камни прибывают (s >= N)</div>
+        <p><strong>Пример:</strong> За ход можно добавить 1 камень или увеличить кучу в 2 раза. Игра идёт до тех пор, пока камней не станет <strong>не менее 69</strong>.</p>
+        
+        <h3>Код для этого прототипа</h3>
+        <pre><code>def game(s, p, end):
+    if s &gt;= 69: return p in end
+    if p &gt;= max(end): return False
+    m = [game(s + 1, p + 1, end), game(s * 2, p + 1, end)]
+    return (any if p % 2 == 0 else all)(m)</code></pre>
+
+        <h3>Построчный разбор</h3>
+        <div class="line-card">
+          <div class="line-num">1</div>
+          <div>
+            <div class="line-code">def game(s, p, end):</div>
+            <div class="line-text">Объявляем функцию. <code>s</code> — камни, <code>p</code> — ход, <code>end</code> — на каком ходу должен быть выигрыш.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">2</div>
+          <div>
+            <div class="line-code">if s &gt;= 69: return p in end</div>
+            <div class="line-text"><strong>Условие выхода.</strong> Если камней 69 или больше, игра окончена. Проверяем, входит ли номер текущего хода <code>p</code> в список <code>end</code>. Если да — возвращаем <code>True</code> (победа).</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">3</div>
+          <div>
+            <div class="line-code">if p &gt;= max(end): return False</div>
+            <div class="line-text"><strong>Защита от бесконечности.</strong> Если мы сделали больше ходов, чем нужно (<code>max(end)</code>), а игра не кончилась — значит, нужный игрок не смог победить. Возвращаем <code>False</code>.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">4</div>
+          <div>
+            <div class="line-code">m = [game(s + 1, p + 1, end), game(s * 2, p + 1, end)]</div>
+            <div class="line-text"><strong>Перебор ходов.</strong> Запускаем рекурсию для двух ходов: <code>+1</code> и <code>*2</code>. Результаты (<code>True</code> или <code>False</code>) складываем в список <code>m</code>.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">5</div>
+          <div>
+            <div class="line-code">return (any if p % 2 == 0 else all)(m)</div>
+            <div class="line-text"><strong>Выбор стратегии.</strong> Если <code>p</code> чётное (Петя) — используем <code>any(m)</code> (достаточно одного победного хода). Если нечётное (Ваня) — <code>all(m)</code> (Петя победит, только если Ваня не сможет помешать ни одним ходом).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ПРОТОТИП 2 -->
+      <div class="task-card">
+        <div class="task-title">Прототип 2: Одна куча, камни убывают (s <= N)</div>
+        <p><strong>Пример:</strong> За ход можно убрать 3 камня, убрать 8 камней или уменьшить кучу в 3 раза (округление вниз). Игра идёт до тех пор, пока камней не станет <strong>не более 16</strong>.</p>
+        
+        <h3>Код для этого прототипа</h3>
+        <pre><code>def game(s, p, end):
+    if s &lt;= 16: return p in end
+    if p &gt;= max(end): return False
+    m = [game(s - 3, p + 1, end), game(s - 8, p + 1, end), game(s // 3, p + 1, end)]
+    return (any if p % 2 == 0 else all)(m)</code></pre>
+
+        <h3>Построчный разбор</h3>
+        <div class="line-card">
+          <div class="line-num">1</div>
+          <div>
+            <div class="line-code">def game(s, p, end):</div>
+            <div class="line-text">Объявление функции.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">2</div>
+          <div>
+            <div class="line-code">if s &lt;= 16: return p in end</div>
+            <div class="line-text"><strong>Условие выхода.</strong> Игра кончается, когда камней становится <strong>16 или меньше</strong>. Если ход <code>p</code> входит в <code>end</code> — победа.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">3</div>
+          <div>
+            <div class="line-code">if p &gt;= max(end): return False</div>
+            <div class="line-text"><strong>Ограничение ходов.</strong> Отсекаем ветки, где игра затянулась дольше нужного.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">4</div>
+          <div>
+            <div class="line-code">m = [game(s - 3, p + 1, end), game(s - 8, p + 1, end), game(s // 3, p + 1, end)]</div>
+            <div class="line-text"><strong>Перебор ходов.</strong> Здесь три возможных хода. <code>//3</code> — это целочисленное деление (округление вниз), как и сказано в условии.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">5</div>
+          <div>
+            <div class="line-code">return (any if p % 2 == 0 else all)(m)</div>
+            <div class="line-text"><strong>Выбор стратегии.</strong> Стандартная проверка чётности: Петя (<code>any</code>), Ваня (<code>all</code>).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ПРОТОТИП 3 -->
+      <div class="task-card">
+        <div class="task-title">Прототип 3: Две кучи (a + b >= N)</div>
+        <p><strong>Пример:</strong> В первой куче 13 камней, во второй S. За ход можно добавить 3 камня в любую кучу или увеличить любую кучу в 2 раза. Игра кончается, когда <strong>сумма</strong> камней станет не менее 135.</p>
+        
+        <h3>Код для этого прототипа</h3>
+        <pre><code>def game(a, b, p, end):
+    if a + b &gt;= 135: return p in end
+    if p &gt;= max(end): return False
+    m = [
+        game(a + 3, b, p + 1, end), game(a * 2, b, p + 1, end),
+        game(a, b + 3, p + 1, end), game(a, b * 2, p + 1, end)
+    ]
+    return (any if p % 2 == 0 else all)(m)</code></pre>
+
+        <h3>Построчный разбор</h3>
+        <div class="line-card">
+          <div class="line-num">1</div>
+          <div>
+            <div class="line-code">def game(a, b, p, end):</div>
+            <div class="line-text">Появилась вторая переменная <code>b</code> — это вторая куча.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">2</div>
+          <div>
+            <div class="line-code">if a + b &gt;= 135: return p in end</div>
+            <div class="line-text"><strong>Условие выхода.</strong> Проверяем <strong>сумму</strong> двух куч.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">3</div>
+          <div>
+            <div class="line-code">if p &gt;= max(end): return False</div>
+            <div class="line-text"><strong>Ограничение ходов.</strong> Всё без изменений.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">4</div>
+          <div>
+            <div class="line-code">m = [game(a + 3, b, ...), game(a * 2, b, ...), game(a, b + 3, ...), game(a, b * 2, ...)]</div>
+            <div class="line-text"><strong>Перебор ходов.</strong> Теперь 4 возможных хода (добавить в первую, умножить первую, добавить во вторую, умножить вторую). Обрати внимание: когда меняем <code>a</code>, то <code>b</code> остаётся прежним, и наоборот.</div>
+          </div>
+        </div>
+        <div class="line-card">
+          <div class="line-num">5</div>
+          <div>
+            <div class="line-code">return (any if p % 2 == 0 else all)(m)</div>
+            <div class="line-text"><strong>Выбор стратегии.</strong> Логика чётности не меняется.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА 3: ПРАКТИКА -->
+    <section id="practice" class="section">
+      <h2>Задачи для самостоятельного решения</h2>
+      <p>Задачи взяты из файла ФИПИ. Введи ответ (для нескольких чисел — через пробел) и нажми «Проверить».</p>
+
+      <!-- ЗАДАЧА 1 -->
+      <div class="task-card">
+        <div class="task-title">Задача 1 (Одна куча, увеличение)</div>
+        <div class="task-desc">
+          <strong>Задание 19.</strong> Два игрока, Петя и Ваня, играют в следующую игру. Перед игроками лежит куча камней. Игроки ходят по очереди, первый ход делает Петя. За один ход игрок может добавить в кучу один камень или увеличить количество камней в куче в два раза. Для того чтобы делать ходы, у каждого игрока есть неограниченное количество камней.<br><br>
+          Игра завершается в тот момент, когда количество камней в куче становится не менее 69. Победителем считается игрок, сделавший последний ход, т.е. первым получивший кучу, в которой находится 69 или больше камней.<br><br>
+          В начальный момент в куче было S камней, 1 ≤ S ≤ 68.<br><br>
+          Будем говорить, что игрок имеет выигрышную стратегию, если он может выиграть при любых ходах противника. Укажите минимальное значение S, при котором Петя не может выиграть за один ход, но при любом ходе Пети Ваня может выиграть своим первым ходом.<br><br>
+          <strong>Задание 20.</strong> Для игры, описанной в задании 19, найдите два наименьших значения S, при которых у Пети есть выигрышная стратегия, причём одновременно выполняются два условия:<br>
+          – Петя не может выиграть за один ход;<br>
+          – Петя может выиграть своим вторым ходом независимо от того, как будет ходить Ваня.<br>
+          Найденные значения запишите в ответе в порядке возрастания.<br><br>
+          <strong>Задание 21.</strong> Для игры, описанной в задании 19, найдите значение S, при котором одновременно выполняются два условия:<br>
+          – у Вани есть выигрышная стратегия, позволяющая ему выиграть первым или вторым ходом при любой игре Пети;<br>
+          – у Вани нет стратегии, которая позволит ему гарантированно выиграть первым ходом.<br>
+          Если найдено несколько значений S, в ответе запишите наименьшее из них.
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 19: </label>
+          <input type="text" id="ans1-19" placeholder="...">
+          <button class="btn btn-check" onclick="checkAnswer('1-19', '34')">Проверить</button>
+          <div class="result" id="res1-19"></div>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 20: </label>
+          <input type="text" id="ans1-20" placeholder="... ...">
+          <button class="btn btn-check" onclick="checkAnswer('1-20', '17 33')">Проверить</button>
+          <div class="result" id="res1-20"></div>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 21: </label>
+          <input type="text" id="ans1-21" placeholder="...">
+          <button class="btn btn-check" onclick="checkAnswer('1-21', '32')">Проверить</button>
+          <div class="result" id="res1-21"></div>
+        </div>
+
+        <button class="btn btn-code" onclick="toggleCode('code1')">Показать код</button>
+        <div id="code1" class="hidden">
+<pre><code>def game(s, p, end):
+    if s &gt;= 69: return p in end
+    if p &gt;= max(end): return False
+    m = [game(s + 1, p + 1, end), game(s * 2, p + 1, end)]
+    return (any if p % 2 == 0 else all)(m)
+
+# 19: Петя не выигрывает за 1, Ваня выигрывает за 1
+print(min(s for s in range(1, 69) if not game(s, 0, [1]) and game(s, 0, [2])))
+
+# 20: Петя выигрывает за 2 (на 3-м ходу), но не за 1
+print(sorted([s for s in range(1, 69) if game(s, 0, [3]) and not game(s, 0, [1])])[:2])
+
+# 21: Ваня выигрывает за 1 или 2 (на 2-м или 4-м), но не за 1
+print(min(s for s in range(1, 69) if game(s, 0, [4]) and not game(s, 0, [2])))</code></pre>
+        </div>
+      </div>
+
+      <!-- ЗАДАЧА 2 -->
+      <div class="task-card">
+        <div class="task-title">Задача 2 (Одна куча, уменьшение)</div>
+        <div class="task-desc">
+          <strong>Задание 19.</strong> Два игрока, Петя и Ваня, играют в следующую игру. Перед игроками лежит куча камней. Игроки ходят по очереди, первый ход делает Петя. За один ход игрок может:<br>
+          – убрать из кучи 3 камня;<br>
+          – убрать из кучи 8 камней;<br>
+          – уменьшить количество камней в куче в 3 раза (количество камней, полученное при делении, округляется до меньшего).<br><br>
+          Например, из кучи в 20 камней за один ход можно получить кучу из 17, 12 или 6 камней.<br><br>
+          Игра завершается, когда количество камней в куче становится не более 16. Победителем считается игрок, сделавший последний ход, то есть первым получивший кучу из 16 или менее камней. В начальный момент в куче было S камней, S ≥ 17.<br><br>
+          Будем говорить, что игрок имеет выигрышную стратегию, если он может выиграть при любых ходах противника.<br><br>
+          Укажите минимальное значение S, при котором Петя не может выиграть за один ход, но при любом ходе Пети Ваня может выиграть своим первым ходом.<br><br>
+          <strong>Задание 20.</strong> Для игры, описанной в задании 19, найдите два наименьших значения S, при которых у Пети есть выигрышная стратегия, причём одновременно выполняются два условия:<br>
+          – Петя не может выиграть за один ход;<br>
+          – Петя может выиграть своим вторым ходом независимо от того,<br>
+          как будет ходить Ваня.<br>
+          Найденные значения запишите в ответе в порядке возрастания.<br><br>
+          <strong>Задание 21.</strong> Для игры, описанной в задании 19, найдите минимальное значение S, при котором одновременно выполняются два условия:<br>
+          – у Вани есть выигрышная стратегия, позволяющая ему выиграть первым или вторым ходом при любой игре Пети;<br>
+          – у Вани нет стратегии, которая позволит ему гарантированно выиграть первым ходом.
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 19: </label>
+          <input type="text" id="ans2-19" placeholder="...">
+          <button class="btn btn-check" onclick="checkAnswer('2-19', '154')">Проверить</button>
+          <div class="result" id="res2-19"></div>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 20: </label>
+          <input type="text" id="ans2-20" placeholder="... ...">
+          <button class="btn btn-check" onclick="checkAnswer('2-20', '157 162')">Проверить</button>
+          <div class="result" id="res2-20"></div>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 21: </label>
+          <input type="text" id="ans2-21" placeholder="...">
+          <button class="btn btn-check" onclick="checkAnswer('2-21', '165')">Проверить</button>
+          <div class="result" id="res2-21"></div>
+        </div>
+
+        <button class="btn btn-code" onclick="toggleCode('code2')">Показать код</button>
+        <div id="code2" class="hidden">
+<pre><code>def game(s, p, end):
+    if s &lt;= 16: return p in end
+    if p &gt;= max(end): return False
+    m = [game(s - 3, p + 1, end), game(s - 8, p + 1, end), game(s // 3, p + 1, end)]
+    return (any if p % 2 == 0 else all)(m)
+
+# 19
+print(min(s for s in range(17, 300) if not game(s, 0, [1]) and game(s, 0, [2])))
+
+# 20
+print(sorted([s for s in range(17, 300) if game(s, 0, [3]) and not game(s, 0, [1])])[:2])
+
+# 21
+print(min(s for s in range(17, 300) if game(s, 0, [4]) and not game(s, 0, [2])))</code></pre>
+        </div>
+      </div>
+
+      <!-- ЗАДАЧА 3 -->
+      <div class="task-card">
+        <div class="task-title">Задача 3 (Две кучи)</div>
+        <div class="task-desc">
+          <strong>Задание 19.</strong> Два игрока, Петя и Ваня, играют в следующую игру. Перед игроками лежат две кучи камней. Игроки ходят по очереди, первый ход делает Петя. За один ход игрок может:<br>
+          – добавить в одну из куч (по своему выбору) 3 камня;<br>
+          – увеличить количество камней в одной из куч (по своему выбору) в 2 раза.<br><br>
+          Например, пусть в одной куче 20 камней, а в другой 30 камней; такую позицию в игре обозначим (20, 30). Тогда за один ход можно получить любую из четырёх позиций: (23, 30), (20, 33), (40, 30), (20, 60).<br><br>
+          Для того чтобы делать ходы, у каждого игрока есть неограниченное количество камней. Игра завершается в тот момент, когда суммарное количество камней в двух кучах становится не менее 135. Победителем считается игрок, сделавший последний ход, то есть первым получивший такую игровую позицию, при которой в двух кучах суммарно 135 камней или больше. В начальный момент в первой куче было 13 камней, во второй куче – S камней; 1 ≤ S ≤ 121.<br><br>
+          Будем говорить, что игрок имеет выигрышную стратегию, если он может выиграть при любых ходах противника.<br><br>
+          Известно, что Ваня выиграл своим первым ходом после неудачного хода Пети. Укажите минимальное значение S, при котором такая ситуация возможна.<br><br>
+          <strong>Задание 20.</strong> Для игры, описанной в задании 19, найдите два наименьших значения S, при которых у Пети есть выигрышная стратегия, причём одновременно выполняются два условия:<br>
+          – Петя не может выиграть за один ход;<br>
+          – Петя может выиграть своим вторым ходом независимо от того, как будет ходить Ваня.<br>
+          Найденные значения запишите в ответе в порядке возрастания.<br><br>
+          <strong>Задание 21.</strong> Для игры, описанной в задании 19, найдите наименьшее значение S, при котором одновременно выполняются два условия:<br>
+          – у Вани есть выигрышная стратегия, позволяющая ему выиграть первым или вторым ходом при любой игре Пети;<br>
+          – у Вани нет стратегии, которая позволит ему гарантированно выиграть первым ходом.
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 19: </label>
+          <input type="text" id="ans3-19" placeholder="...">
+          <button class="btn btn-check" onclick="checkAnswer('3-19', '53')">Проверить</button>
+          <div class="result" id="res3-19"></div>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 20: </label>
+          <input type="text" id="ans3-20" placeholder="... ...">
+          <button class="btn btn-check" onclick="checkAnswer('3-20', '62 63')">Проверить</button>
+          <div class="result" id="res3-20"></div>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label>Ответ на 21: </label>
+          <input type="text" id="ans3-21" placeholder="...">
+          <button class="btn btn-check" onclick="checkAnswer('3-21', '64')">Проверить</button>
+          <div class="result" id="res3-21"></div>
+        </div>
+
+        <button class="btn btn-code" onclick="toggleCode('code3')">Показать код</button>
+        <div id="code3" class="hidden">
+<pre><code>def game(a, b, p, end):
+    if a + b &gt;= 135: return p in end
+    if p &gt;= max(end): return False
+    m = [
+        game(a + 3, b, p + 1, end), game(a * 2, b, p + 1, end),
+        game(a, b + 3, p + 1, end), game(a, b * 2, p + 1, end)
+    ]
+    return (any if p % 2 == 0 else all)(m)
+
+# 19: Ваня выигрывает за 1 ход
+print(min(s for s in range(1, 122) if not game(13, s, 0, [1]) and game(13, s, 0, [2])))
+
+# 20: Петя выигрывает за 2 хода (на 3-м ходу)
+print(sorted([s for s in range(1, 122) if game(13, s, 0, [3]) and not game(13, s, 0, [1])])[:2])
+
+# 21: Ваня выигрывает за 1 или 2 (на 4-м), но не за 1
+print(min(s for s in range(1, 122) if game(13, s, 0, [4]) and not game(13, s, 0, [2])))</code></pre>
+        </div>
+      </div>
+
+    </section>
+  </main>
+</div>
+
+<script>
+  function showTab(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function toggleCode(id) {
+    const el = document.getElementById(id);
+    if (el.classList.contains('hidden')) {
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+    }
+  }
+
+  function checkAnswer(taskId, correct) {
+    const input = document.getElementById('ans' + taskId).value.trim();
+    const result = document.getElementById('res' + taskId);
+    const userAns = input.replace(/\s+/g, ' ');
+    const correctAns = correct.replace(/\s+/g, ' ');
+    if (userAns === correctAns) {
+      result.textContent = 'Верно!';
+      result.className = 'result ok';
+    } else {
+      result.textContent = 'Неверно. Попробуй ещё раз.';
+      result.className = 'result err';
+    }
+  }
+</script>
+
+</body>
+</html>
